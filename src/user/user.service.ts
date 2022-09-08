@@ -25,21 +25,15 @@ export class UserService {
     return newUsers.data;
   }
 
-  async connectUsersWithDepartment(departmentName: string): Promise<void> {
-    const department = await this.departmentService.getDepartment(
-      departmentName,
-    );
-    department.users = await this.userRepository.find();
-    await this.departmentService.saveDepartment(department);
-  }
-
-  async addNewUsers(newUsers): Promise<void> {
+  async addNewUsersToDepartment(users): Promise<void> {
+    const department = await this.departmentService.getDepartmentById(1);
+    const newUsers = users.map((user) => ({ ...user, department }));
     await this.userRepository
       .createQueryBuilder()
       .insert()
       .into(User)
       .values(newUsers)
       .execute();
-    await this.connectUsersWithDepartment('Front-end');
+    await this.departmentService.saveDepartment(department);
   }
 }

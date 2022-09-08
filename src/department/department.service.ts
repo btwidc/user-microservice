@@ -11,13 +11,25 @@ export class DepartmentService {
     private departmentRepository: Repository<Department>,
   ) {}
 
-  async getDepartment(name: string): Promise<Department> {
+  async getDepartments(): Promise<Department[]> {
+    return await this.departmentRepository.find();
+  }
+
+  async getDepartmentById(id: number): Promise<Department> {
     return await this.departmentRepository.findOneBy({
-      name,
+      id,
     });
   }
 
   async saveDepartment(department: Department): Promise<Department> {
     return await this.departmentRepository.save(department);
+  }
+
+  async getDepartmentWithUsers(id: number) {
+    return await this.departmentRepository
+      .createQueryBuilder('department')
+      .innerJoinAndSelect('department.users', 'user')
+      .where('department.id = :id', { id })
+      .getMany();
   }
 }

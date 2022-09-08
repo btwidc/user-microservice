@@ -10,6 +10,6 @@ export class UserConsumer {
   @Process('updateUsers')
   async handleUpdateUsers(job: Job) {
     const newUsers = job.data.users;
-    return await this.userService.addNewUsers(newUsers);
+    return await this.userService.addNewUsersToDepartment(newUsers);
   }
 }
