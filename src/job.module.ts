@@ -1,12 +1,15 @@
-import { Module } from '@nestjs/common';
+import {
+  Module,
+  OnModuleInit,
+  BeforeApplicationShutdown,
+} from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BullModule } from '@nestjs/bull';
 
-import { Department } from './department/department.entity';
-import { User } from './user/user.entity';
-
 import { DepartmentModule } from './department/department.module';
 import { UserModule } from './user/user.module';
+
+import { UserProducerService } from './jobs/producers/user.producer.service';
 
 @Module({
   imports: [
@@ -17,7 +20,7 @@ import { UserModule } from './user/user.module';
       username: 'btwidc',
       password: 'btwidc',
       database: 'user_microservice_db',
-      entities: [Department, User],
+      autoLoadEntities: true,
       synchronize: true,
     }),
     BullModule.forRoot({
@@ -32,4 +35,12 @@ import { UserModule } from './user/user.module';
   controllers: [],
   providers: [],
 })
-export class JobModule {}
+export class JobModule implements OnModuleInit, BeforeApplicationShutdown {
+  constructor(private readonly userProducerService: UserProducerService) {}
+  async onModuleInit() {
+    await this.userProducerService.jobAddNewUsers();
+  }
+  async beforeApplicationShutdown() {
+    await this.userProducerService.clearUnnecessaryJobs();
+  }
+}

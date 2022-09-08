@@ -10,4 +10,14 @@ export class DepartmentService {
     @InjectRepository(Department)
     private departmentRepository: Repository<Department>,
   ) {}
+
+  async getDepartment(name: string): Promise<Department> {
+    return await this.departmentRepository.findOneBy({
+      name,
+    });
+  }
+
+  async saveDepartment(department: Department): Promise<Department> {
+    return await this.departmentRepository.save(department);
+  }
 }
