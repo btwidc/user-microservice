@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { Department } from './department.entity';
+import { CreateDepartmentDto } from './dto/createDepartmentDto';
 
 @Injectable()
 export class DepartmentService {
@@ -19,6 +20,24 @@ export class DepartmentService {
     return await this.departmentRepository.findOneBy({
       id,
     });
+  }
+
+  async createDepartment(createDepartmentDto: CreateDepartmentDto) {
+    return await this.departmentRepository
+      .createQueryBuilder()
+      .insert()
+      .into(Department)
+      .values({ name: createDepartmentDto.name })
+      .execute();
+  }
+
+  async deleteDepartment(id: number) {
+    return await this.departmentRepository
+      .createQueryBuilder()
+      .delete()
+      .from(Department)
+      .where('id = :id', { id })
+      .execute();
   }
 
   async saveDepartment(department: Department): Promise<Department> {
