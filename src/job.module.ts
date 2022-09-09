@@ -3,6 +3,7 @@ import {
   OnModuleInit,
   BeforeApplicationShutdown,
 } from '@nestjs/common';
+
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BullModule } from '@nestjs/bull';
 
@@ -37,9 +38,11 @@ import { UserProducerService } from './jobs/producers/user.producer.service';
 })
 export class JobModule implements OnModuleInit, BeforeApplicationShutdown {
   constructor(private readonly userProducerService: UserProducerService) {}
+
   async onModuleInit() {
     await this.userProducerService.jobAddNewUsers();
   }
+
   async beforeApplicationShutdown() {
     await this.userProducerService.clearUnnecessaryJobs();
   }

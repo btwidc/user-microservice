@@ -30,6 +30,7 @@ export class DepartmentService {
       .values({ name: createDepartmentDto.name })
       .returning('*')
       .execute();
+
     return newDepartmentData.raw;
   }
 
@@ -41,6 +42,7 @@ export class DepartmentService {
       .where('id = :id', { id })
       .returning('*')
       .execute();
+
     return deletedDepartmentData.raw;
   }
 
@@ -49,10 +51,16 @@ export class DepartmentService {
   }
 
   async getDepartmentWithUsers(id: number) {
-    return await this.departmentRepository
+    const departmentData = await this.departmentRepository
       .createQueryBuilder('department')
       .innerJoinAndSelect('department.users', 'user')
       .where('department.id = :id', { id })
       .getOne();
+
+    if (!departmentData) {
+      return await this.getDepartmentById(id);
+    }
+
+    return departmentData;
   }
 }

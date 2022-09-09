@@ -15,6 +15,7 @@ export class UserProducerService {
   async jobAddNewUsers() {
     const newUsers = await this.userService.getNewUsers();
     const newUsersData = newUsers.data;
+
     await newUsersData.forEach((user) => {
       delete user.id;
     });
@@ -22,8 +23,7 @@ export class UserProducerService {
       'updateUsers',
       { users: newUsersData },
       {
-        //repeat: { every: 1000 * 60 * 60 },
-        repeat: { every: 10000 },
+        repeat: { every: 1000 * 60 * 60 },
       },
     );
   }

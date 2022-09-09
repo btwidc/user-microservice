@@ -28,6 +28,7 @@ export class UserService {
   async addNewUsersToDepartment(users): Promise<void> {
     const department = await this.departmentService.getDepartmentById(1);
     const newUsers = users.map((user) => ({ ...user, department }));
+
     await this.userRepository
       .createQueryBuilder()
       .insert()
