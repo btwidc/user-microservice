@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -15,6 +15,7 @@ export class UserService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
     private readonly httpService: HttpService,
+    @Inject(forwardRef(() => DepartmentService))
     private readonly departmentService: DepartmentService,
   ) {}
 
@@ -36,5 +37,17 @@ export class UserService {
       .values(newUsers)
       .execute();
     await this.departmentService.saveDepartment(department);
+  }
+
+  async deleteUsersInDepartment(id: number) {
+    await this.userRepository
+      .createQueryBuilder()
+      .delete()
+      .from(User)
+      .where('departmentId = :id', { id })
+      .execute()
+      .catch((e) => {
+        console.log(e);
+      });
   }
 }

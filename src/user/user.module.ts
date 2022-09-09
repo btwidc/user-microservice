@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BullModule } from '@nestjs/bull';
@@ -20,10 +20,10 @@ import { UserConsumer } from '../jobs/consumers/user.consumer';
       name: 'user',
     }),
     HttpModule,
-    DepartmentModule,
+    forwardRef(() => DepartmentModule),
   ],
   controllers: [UserController],
   providers: [UserService, UserProducerService, UserConsumer],
-  exports: [UserProducerService],
+  exports: [UserProducerService, UserService],
 })
 export class UserModule {}

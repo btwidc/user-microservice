@@ -1,15 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { Department } from './department.entity';
 import { CreateDepartmentDto } from './dto/createDepartmentDto';
 
+import { UserService } from '../user/user.service';
+
 @Injectable()
 export class DepartmentService {
   constructor(
     @InjectRepository(Department)
     private departmentRepository: Repository<Department>,
+    @Inject(forwardRef(() => UserService))
+    private readonly userService: UserService,
   ) {}
 
   async getDepartments(): Promise<Department[]> {
@@ -35,6 +39,8 @@ export class DepartmentService {
   }
 
   async deleteDepartment(id: number) {
+    await this.userService.deleteUsersInDepartment(id);
+
     const deletedDepartmentData = await this.departmentRepository
       .createQueryBuilder()
       .delete()
