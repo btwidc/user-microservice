@@ -23,21 +23,25 @@ export class DepartmentService {
   }
 
   async createDepartment(createDepartmentDto: CreateDepartmentDto) {
-    return await this.departmentRepository
+    const newDepartmentData = await this.departmentRepository
       .createQueryBuilder()
       .insert()
       .into(Department)
       .values({ name: createDepartmentDto.name })
+      .returning('*')
       .execute();
+    return newDepartmentData.raw;
   }
 
   async deleteDepartment(id: number) {
-    return await this.departmentRepository
+    const deletedDepartmentData = await this.departmentRepository
       .createQueryBuilder()
       .delete()
       .from(Department)
       .where('id = :id', { id })
+      .returning('*')
       .execute();
+    return deletedDepartmentData.raw;
   }
 
   async saveDepartment(department: Department): Promise<Department> {
@@ -49,6 +53,6 @@ export class DepartmentService {
       .createQueryBuilder('department')
       .innerJoinAndSelect('department.users', 'user')
       .where('department.id = :id', { id })
-      .getMany();
+      .getOne();
   }
 }
